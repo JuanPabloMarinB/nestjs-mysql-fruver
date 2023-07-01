@@ -7,9 +7,12 @@ import {
   Body,
   Param,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Producto } from '../entities/Producto.entity';
 import { ProductService } from '../services/ProductService';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('producto')
 export class productController {
@@ -25,7 +28,7 @@ export class productController {
     return this.productoService.findById(id);
   }
 
-  @Post()
+  @Post('crear')
   createProducto(@Body() producto: Producto): Promise<Producto> {
     return this.productoService.create(producto);
   }
@@ -80,11 +83,23 @@ export class productController {
   }
 
   @Post('registro')
-  registrarProducto(@Body() producto: Producto): string {
-    // Código para registrar un producto y redireccionar a la página de inicio (inicio.html)
-    return 'redirect:/inicio';
-  }
+  @UseInterceptors(FileInterceptor('imagen'))
+  async registrarProducto(
+    @Body() producto: Producto,
+    @UploadedFile() imagen: Express.Multer.File,
+  ) {
+    await this.productoService.registrar(
+      producto.nombre = "productoImagen",
+      //producto.medida = 
+      producto.costoXunidad = 1500,
+      producto.cantidadIngresada = 100,
+      producto.fechaInventario = "15-10-2023",
+      imagen,
+    );
 
+    return this.productoService.registrar;
+  }
+  
   @Get('registrar-venta')
   registrarVenta(): string {
     // Código para registrar una venta y redireccionar a la página principal (index.html)
