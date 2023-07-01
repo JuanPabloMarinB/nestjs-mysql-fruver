@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UploadedFile, UseInterceptors} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions } from 'typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +9,7 @@ import { CantidadInvalidoException } from '../exceptions/product/CantidadInvalid
 import { FechaInvalidoException } from '../exceptions/product/FechaInvalidoException';
 import { stringify } from 'querystring';
 import { Medida } from '../enums/Medida';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Injectable()
 export class ProductService {
@@ -40,13 +41,14 @@ export class ProductService {
   async save(producto: Producto): Promise<Producto> {
     return this.productoRepository.save(producto);
   }
-
+  @UseInterceptors(FileInterceptor('imagen'))
   async registrar(
     nombre: string,
     medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
     fechaInventario: string,
+    @UploadedFile() imagen: Express.Multer.File,
   ): Promise<void> {
     this.validar(
       nombre,
@@ -54,6 +56,7 @@ export class ProductService {
       costoXunidad,
       cantidadIngresada,
       fechaInventario,
+      imagen,
     );
 
     const producto = new Producto();
@@ -62,6 +65,7 @@ export class ProductService {
     producto.costoXunidad = costoXunidad;
     producto.cantidadVenta = cantidadIngresada;
     producto.fechaInventario = fechaInventario;
+    producto.imagen = imagen.buffer;
 
     await this.productoRepository.save(producto);
   }
@@ -72,6 +76,7 @@ export class ProductService {
     costoXunidad: number,
     cantidadIngresada: number,
     fechaInventario: string,
+    imagen: Buffer,
   ): void {
     if (!nombre || nombre.trim() === '') {
       throw new NombreInvalidoException();

@@ -47,8 +47,8 @@ export class Producto {
   @Column({ type: 'bigint', unique: true })
   codigoBarra: number;
 
-  @Column()
-  imagen: string;
+  @Column('longblob', { nullable: true })
+  imagen: Buffer;
 
   @ManyToOne(() => Categoria, (categoria) => categoria.productos)
   @JoinColumn()
