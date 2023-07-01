@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UploadedFile, UseInterceptors} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions } from 'typeorm';
 import { Repository } from 'typeorm';
 import { Producto } from '../entities/Producto.entity';
 import { NombreInvalidoException } from '../exceptions/product/NombreInvalidoException';
 import { PrecioInvalidoException } from '../exceptions/product/PrecioInvalidoException';
 import { CantidadInvalidoException } from '../exceptions/product/CantidadInvalidoException';
 import { FechaInvalidoException } from '../exceptions/product/FechaInvalidoException';
-import { stringify } from 'querystring';
 import { Medida } from '../enums/Medida';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Injectable()
 export class ProductService {
@@ -40,38 +39,42 @@ export class ProductService {
   async save(producto: Producto): Promise<Producto> {
     return this.productoRepository.save(producto);
   }
-
+  @UseInterceptors(FileInterceptor('imagen'))
   async registrar(
     nombre: string,
-    medida: Medida,
+    //medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
     fechaInventario: string,
+    @UploadedFile() imagen: Express.Multer.File,
   ): Promise<void> {
     this.validar(
       nombre,
-      medida,
+      //medida,
       costoXunidad,
       cantidadIngresada,
       fechaInventario,
+      imagen.buffer,
     );
 
     const producto = new Producto();
     producto.nombre = nombre;
-    producto.medida = medida;
+    //producto.medida = medida;
     producto.costoXunidad = costoXunidad;
     producto.cantidadVenta = cantidadIngresada;
     producto.fechaInventario = fechaInventario;
+    producto.imagen = imagen.buffer;
 
     await this.productoRepository.save(producto);
   }
 
   private validar(
     nombre: string,
-    medida: Medida,
+    //medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
     fechaInventario: string,
+    imagen: Buffer,
   ): void {
     if (!nombre || nombre.trim() === '') {
       throw new NombreInvalidoException();
@@ -88,7 +91,20 @@ export class ProductService {
     ) {
       throw new FechaInvalidoException();
     }
+    FileInterceptor('imagen', {
+      fileFilter: (req, imagen, callback) => {
+        if (!imagen.originalname.match(/.(png)$/)) {
+          return callback(new Error('Solo se permiten archivos PNG'), false);
+        }
+        if (imagen.size > 500 * 1024) {
+          return callback(new Error('El tamaño máximo del archivo es de 500 KB'), false);
+        }
+        callback(null, true);
+      },
+    })
+  
   }
+  
 
   async registrarVenta(
     producto: string,

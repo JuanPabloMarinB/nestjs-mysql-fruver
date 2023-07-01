@@ -13,6 +13,7 @@ import { Categoria } from '../entities/Categoria.entity';
 import { productController } from '../controllers/productController';
 import { userController } from '../controllers/userController';
 import { JwtService } from '@nestjs/jwt';
+import { EnumController } from 'src/controllers/enumsController';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { JwtService } from '@nestjs/jwt';
       userModule,
     ]),
   ],
-  controllers: [productController, userController],
+  controllers: [productController, userController, EnumController],
   providers: [ProductService, JwtAuthGuard, UserService,  JwtService],
 })
 export class AppModule {}

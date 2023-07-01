@@ -2,7 +2,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
   OneToMany,
 } from 'typeorm';
 import { Producto } from './Producto.entity';
