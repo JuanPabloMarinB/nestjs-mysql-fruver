@@ -6,11 +6,10 @@ import {
   Session,
   Res,
   Render,
-  Redirect,
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtAuthGuard } from '../modules/jwt-auth.guard';
+import { JwtAuthGuard } from '../modules/Jwt-auth.guard';
 import { Usuario } from '../entities/Usuario.entity';
 import { UserService } from '../services/UserService';
 import { NombreInvalidoException } from '../exceptions/user/NombreInvalidoException';

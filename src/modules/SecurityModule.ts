@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './Jwt.strategy';
 import { UserService } from '../services/UserService';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './Jwt-auth.guard';
 
 @Module({
   imports: [
