@@ -2,7 +2,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Producto } from './Producto.entity';
 
@@ -11,28 +12,34 @@ export class Ventas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  ventaRealizada: number;
+  @Column({type: 'bigint', unique: true})
+  ventaFactura: number;
 
-  @Column()
-  cantidadVendida: number;
-
-  @Column()
+  @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
   fechaVenta: Date;
 
-  @Column()
-  totalVentasRealizadas: number;
-
-  @Column()
-  TotalAcumulado: number;
-
-  @Column()
-  fechaCierreCaja: Date;
-
-  @Column()
-  ganancia: number;
-
-  @OneToMany(() => Producto, (producto) => producto.ventas)
+  @ManyToMany(() => Producto)
+  @JoinTable()
   productos: Producto[];
   
+  /* tener en cuenta...
+  @Column({type: 'text', array: true})
+  cantidadVenta: number[];*/
+  
+  @Column()
+  totalAPagar: number;
+
+  @Column()
+  efectivo: number;
+
+  @Column()
+  cambio: number;
+/*
+  constructor() {
+    this.productos = [];
+  }*/
+
+  constructor() {
+    this.totalAPagar = 0;
+  }
 }
