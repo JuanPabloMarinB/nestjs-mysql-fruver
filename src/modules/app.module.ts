@@ -14,6 +14,9 @@ import { productController } from '../controllers/productController';
 import { userController } from '../controllers/userController';
 import { JwtService } from '@nestjs/jwt';
 import { EnumController } from 'src/controllers/enumsController';
+import { ventasModule } from './ventasModule';
+import { VentasService } from 'src/services/VentaService';
+import { VentasController } from 'src/controllers/ventasController';
 
 @Module({
   imports: [
@@ -24,10 +27,11 @@ import { EnumController } from 'src/controllers/enumsController';
       Ventas,
       Categoria,
       productModule,
+      ventasModule,
       userModule,
     ]),
   ],
-  controllers: [productController, userController, EnumController],
-  providers: [ProductService, JwtAuthGuard, UserService,  JwtService],
+  controllers: [productController, userController, EnumController, VentasController],
+  providers: [ProductService, JwtAuthGuard, UserService,  JwtService, VentasService],
 })
 export class AppModule {}

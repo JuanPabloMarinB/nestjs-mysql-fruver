@@ -93,7 +93,6 @@ export class productController {
       //producto.medida = 
       producto.costoXunidad = 1500,
       producto.cantidadIngresada = 100,
-      producto.fechaInventario = "15-10-2023",
       imagen,
     );
 

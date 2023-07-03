@@ -45,7 +45,6 @@ export class ProductService {
     //medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
-    fechaInventario: string,
     @UploadedFile() imagen: Express.Multer.File,
   ): Promise<void> {
     this.validar(
@@ -53,7 +52,6 @@ export class ProductService {
       //medida,
       costoXunidad,
       cantidadIngresada,
-      fechaInventario,
       imagen.buffer,
     );
 
@@ -61,8 +59,8 @@ export class ProductService {
     producto.nombre = nombre;
     //producto.medida = medida;
     producto.costoXunidad = costoXunidad;
-    producto.cantidadVenta = cantidadIngresada;
-    producto.fechaInventario = fechaInventario;
+    //producto.cantidadVenta = cantidadIngresada;
+    //producto.fechaInventario = fechaInventario;
     producto.imagen = imagen.buffer;
 
     await this.productoRepository.save(producto);
@@ -73,7 +71,6 @@ export class ProductService {
     //medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
-    fechaInventario: string,
     imagen: Buffer,
   ): void {
     if (!nombre || nombre.trim() === '') {
@@ -84,12 +81,6 @@ export class ProductService {
     }
     if (isNaN(cantidadIngresada) || cantidadIngresada <= 0) {
       throw new CantidadInvalidoException();
-    }
-    if (
-      !(fechaInventario.length == 10)
-      //isNaN(stringify( fechaInventario.getTime()))
-    ) {
-      throw new FechaInvalidoException();
     }
     FileInterceptor('imagen', {
       fileFilter: (req, imagen, callback) => {
@@ -104,62 +95,13 @@ export class ProductService {
     })
   
   }
-  
-
-  async registrarVenta(
-    producto: string,
-    cantidadVenta: number,
-    costoXunidad: number,
-  ): Promise<void> {
-    const productoExistente = await this.productoRepository.findOne({
-      where: { nombre: producto },
-    });
-
-    if (productoExistente) {
-      const cantidadDisponible = productoExistente.cantidadVenta;
-
-      if (productoExistente.medida === Medida.UNIDAD) {
-        if (cantidadVenta <= cantidadDisponible) {
-          const precioVenta = costoXunidad * cantidadVenta;
-          productoExistente.cantidadVenta = cantidadDisponible - cantidadVenta;
-          await this.productoRepository.save(productoExistente);
-          console.log(
-            `Venta registrada correctamente. Precio de venta: $${precioVenta.toFixed(
-              2,
-            )}.`,
-          );
-        } else {
-          console.log(
-            'No hay suficiente cantidad de ' + producto + ' en el inventario.',
-          );
-        }
-      } else if (productoExistente.medida === Medida.PESO) {
-        if (cantidadVenta <= cantidadDisponible) {
-          const precioVenta = costoXunidad * cantidadVenta;
-          productoExistente.cantidadVenta = cantidadDisponible - cantidadVenta;
-          await this.productoRepository.save(productoExistente);
-          console.log(
-            `Venta registrada correctamente. Precio de venta: $${precioVenta.toFixed(
-              2,
-            )}.`,
-          );
-        } else {
-          console.log(
-            'No hay suficiente cantidad de ' + producto + ' en el inventario.',
-          );
-        }
-      }
-    } else {
-      console.log('Producto no encontrado en el inventario.');
-    }
-  }
 
   async mostrarInventario(): Promise<void> {
     const inventario = await this.productoRepository.find();
     console.log('***** Inventario *****');
     inventario.forEach((producto) => {
       const medida = producto.medida === Medida.UNIDAD ? 'unidades' : 'kilos';
-      console.log(`${producto.nombre}: ${producto.cantidadVenta} ${medida}`);
+      console.log(`${producto.nombre}: ${producto.cantidadActual} ${medida}`);
     });
     console.log();
   }
