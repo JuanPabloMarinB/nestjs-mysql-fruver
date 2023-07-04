@@ -83,17 +83,20 @@ export class productController {
   }
 
   @Post('registro')
-  @UseInterceptors(FileInterceptor('imagen'))
+  //@UseInterceptors(FileInterceptor('imagen'))
   async registrarProducto(
     @Body() producto: Producto,
-    @UploadedFile() imagen: Express.Multer.File,
+    //@UploadedFile() imagen: Express.Multer.File,
   ) {
     await this.productoService.registrar(
-      producto.nombre = "productoImagen",
-      //producto.medida = 
-      producto.costoXunidad = 1500,
-      producto.cantidadIngresada = 100,
-      imagen,
+      producto.nombre,
+      producto.medida,
+      producto.costoXunidad,
+      producto.cantidadIngresada,
+      producto.codigoBarra,
+      producto.precioVenta,
+      producto.categoria,
+      //imagen,
     );
 
     return this.productoService.registrar;
