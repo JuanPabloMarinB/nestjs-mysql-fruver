@@ -9,44 +9,44 @@ import {
 import { Categoria } from './Categoria.entity';
 import { Ventas } from './Ventas.entity';
 import { Medida } from '../enums/Medida';
+import { CategoriaEnum } from 'src/enums/CategoriaEnum';
 
 @Entity()
 export class Producto {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'bigint', unique: false, default: 1566 })
+  @Column({ type: 'bigint', unique: false})
   codigoBarra: number;
 
-  @Column({default: "arroz chino"})
+  @Column()
   nombre: string;
 
-  @Column({ type: 'enum', enum: Medida, default: Medida.UNIDAD })
+  @Column({ type: 'enum', enum: Medida})
   medida: Medida;
 
-  @Column({default: 1500})
+  @Column()
   costoXunidad: number;
 
-  @Column({default: 0})
+  @Column()
   precioVenta: number;
 
-  @Column({default: "23-06-2022"})
-  fechaIngreso: string;
+  @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
+  fechaIngreso: Date;
 
   @Column()
   cantidadIngresada: number;
 
-  @Column({default: 0})
+  @Column({nullable: true})
   cantidadActual: number;
 
   @Column({default: false})
   avisoReposicion: boolean;
 
-  @Column('longblob', { nullable: true })
-  imagen: Buffer;
+  /*@Column('longblob', { nullable: true })
+  imagen: Buffer;*/
 
-  @ManyToOne(() => Categoria, (categoria) => categoria.productos)
-  @JoinColumn()
+  @Column({ type: 'enum', enum: CategoriaEnum })
   categoria: Categoria;
 
   @ManyToMany(() => Ventas, (ventas) => ventas.productos)

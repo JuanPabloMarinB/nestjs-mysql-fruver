@@ -8,6 +8,7 @@ import { CantidadInvalidoException } from '../exceptions/product/CantidadInvalid
 import { FechaInvalidoException } from '../exceptions/product/FechaInvalidoException';
 import { Medida } from '../enums/Medida';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Categoria } from 'src/entities/Categoria.entity';
 
 @Injectable()
 export class ProductService {
@@ -39,39 +40,51 @@ export class ProductService {
   async save(producto: Producto): Promise<Producto> {
     return this.productoRepository.save(producto);
   }
-  @UseInterceptors(FileInterceptor('imagen'))
+  //@UseInterceptors(FileInterceptor('imagen'))
   async registrar(
     nombre: string,
-    //medida: Medida,
+    medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
-    @UploadedFile() imagen: Express.Multer.File,
+    codigoBarra: number,
+    precioVenta: number,
+    categoria: Categoria,
+    //@UploadedFile() imagen: Express.Multer.File,
   ): Promise<void> {
     this.validar(
       nombre,
-      //medida,
+      medida,
       costoXunidad,
       cantidadIngresada,
-      imagen.buffer,
+      codigoBarra,
+      precioVenta,
+      categoria,
+      //imagen.buffer,
     );
 
     const producto = new Producto();
     producto.nombre = nombre;
-    //producto.medida = medida;
+    producto.medida = medida;
     producto.costoXunidad = costoXunidad;
-    //producto.cantidadVenta = cantidadIngresada;
+    producto.cantidadIngresada = cantidadIngresada;
+    producto.codigoBarra = codigoBarra;
+    producto.precioVenta = precioVenta;
+    producto.categoria = categoria;
     //producto.fechaInventario = fechaInventario;
-    producto.imagen = imagen.buffer;
+    //producto.imagen = imagen.buffer;
 
     await this.productoRepository.save(producto);
   }
 
   private validar(
     nombre: string,
-    //medida: Medida,
+    medida: Medida,
     costoXunidad: number,
     cantidadIngresada: number,
-    imagen: Buffer,
+    codigoBarra: number,
+    precioVenta: number,
+    categoria: Categoria,
+    //imagen: Buffer,
   ): void {
     if (!nombre || nombre.trim() === '') {
       throw new NombreInvalidoException();
@@ -82,7 +95,7 @@ export class ProductService {
     if (isNaN(cantidadIngresada) || cantidadIngresada <= 0) {
       throw new CantidadInvalidoException();
     }
-    FileInterceptor('imagen', {
+    /*FileInterceptor('imagen', {
       fileFilter: (req, imagen, callback) => {
         if (!imagen.originalname.match(/.(png)$/)) {
           return callback(new Error('Solo se permiten archivos PNG'), false);
@@ -92,7 +105,7 @@ export class ProductService {
         }
         callback(null, true);
       },
-    })
+    })*/
   
   }
 
