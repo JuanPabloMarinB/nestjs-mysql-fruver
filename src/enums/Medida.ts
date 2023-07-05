@@ -1,4 +1,4 @@
 export enum Medida {
   UNIDAD = 'UNIDAD',
-  PESO = 'PESO',
+  PESO = 'PESO (KG)',
 }
