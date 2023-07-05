@@ -30,6 +30,7 @@ export class productController {
 
   @Post('crear')
   createProducto(@Body() producto: Producto): Promise<Producto> {
+    console.log(producto)
     return this.productoService.create(producto);
   }
 
