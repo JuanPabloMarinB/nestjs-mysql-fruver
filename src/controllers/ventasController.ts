@@ -35,8 +35,7 @@ export class VentasController {
     @Body('cantidadVenta') cantidadVenta: number[],
   ) {
     return this.ventasService.registrarVenta(
-      venta.productos,
-      venta.efectivo,
+      venta,
       cantidadVenta,
     );
   }

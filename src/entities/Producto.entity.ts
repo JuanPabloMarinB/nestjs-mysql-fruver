@@ -37,7 +37,7 @@ export class Producto {
   @Column()
   cantidadIngresada: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, default: 0})
   cantidadActual: number;
 
   @Column({default: false})

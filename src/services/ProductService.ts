@@ -30,6 +30,10 @@ export class ProductService {
   }
 
   async create(producto: Producto): Promise<Producto> {
+    console.log("Soy el servicio");
+    console.log(producto)
+    //producto.cantidadActual = 0;
+    producto.cantidadActual = (producto.cantidadActual ?? 0) + producto.cantidadIngresada;
     return this.productoRepository.save(producto);
   }
 
@@ -51,6 +55,7 @@ export class ProductService {
     categoria: Categoria,
     //@UploadedFile() imagen: Express.Multer.File,
   ): Promise<void> {
+    
     this.validar(
       nombre,
       medida,
@@ -70,6 +75,7 @@ export class ProductService {
     producto.codigoBarra = codigoBarra;
     producto.precioVenta = precioVenta;
     producto.categoria = categoria;
+    producto.cantidadActual += producto.cantidadIngresada;
     //producto.fechaInventario = fechaInventario;
     //producto.imagen = imagen.buffer;
 
