@@ -2,11 +2,11 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 const config: TypeOrmModuleOptions = {
   type: 'mysql',
-  host: process.env.DB_HOST || 'containers-us-west-192.railway.app',
-  port: Number.parseInt(process.env.DB_PORT) || 7362,
-  username: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'gFFdMTGQfi9q9JG0uinY',
-  database: process.env.DB_NAME || 'railway',
+  host: 'fruveraws.cjrcbjueogp4.us-east-2.rds.amazonaws.com',
+  port: 3306,
+  username:'fruver_aws',
+  password: 'j!6AojkGOqGWPz*8',
+  database: 'inventario',
   ssl: {
     rejectUnauthorized: false,
   },

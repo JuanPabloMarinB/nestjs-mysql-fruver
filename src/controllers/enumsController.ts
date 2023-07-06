@@ -9,7 +9,7 @@ export class EnumController {
     return Object.values(Medida);
   }
 
-  @Get('Categoria')
+  @Get('categoria')
   getCategoriaEnum() {
     return Object.values(CategoriaEnum);
   }
