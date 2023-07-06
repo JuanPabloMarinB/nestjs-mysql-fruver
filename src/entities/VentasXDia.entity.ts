@@ -1,13 +1,18 @@
 import {
     Entity,
     PrimaryGeneratedColumn,
-    Column,
-    OneToMany,
-    JoinColumn,
+    Column
   } from 'typeorm';
 
   @Entity()
   export class VentasXDia {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    diaVenta: Date;
+
     //Se refiere a la cantidad de ventas que se han hecho en la fecha. Esto no se ingresa desde una solicitud, es un valor calculado automáticamente.
     @Column()
     totalVentasRealizadas: number;

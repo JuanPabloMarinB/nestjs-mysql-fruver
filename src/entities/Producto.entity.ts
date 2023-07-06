@@ -53,5 +53,5 @@ export class Producto {
   ventas: Ventas;
 
   @Column({default: true})
-  activo: boolean;
+  activo: boolean
 }

@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { log } from 'console';
 import { Producto } from 'src/entities/Producto.entity';
 import { Ventas } from 'src/entities/Ventas.entity';
+import { VentasXDia } from 'src/entities/VentasXDia.entity';
 import { Medida } from 'src/enums/Medida';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 @Injectable()
 export class VentasService {
@@ -12,58 +12,107 @@ export class VentasService {
     @InjectRepository(Ventas) private ventasRepository: Repository<Ventas>,
     @InjectRepository(Producto)
     private productoRepository: Repository<Producto>,
+    @InjectRepository(VentasXDia)
+    private ventasXdiaRepository: Repository<VentasXDia>,
   ) {}
-  /*
-    async registrarVentas(
-        nombreProducto: string,
-        codigoBarraProducto: number,
-        cantidadVenta: number,
-        costoXunidad: number,
-      ): Promise<void> {
-        const productoExistente = await this.productoRepository.findOne({
-          where: { 
-            nombre: nombreProducto,
-            codigoBarra: codigoBarraProducto},
-        });
-    
-        if (productoExistente) {
-          const cantidadDisponible = productoExistente.cantidadActual;
-    
-          if (productoExistente.medida === Medida.UNIDAD) {
-            if (cantidadVenta <= cantidadDisponible) {
-              const precioVenta = costoXunidad * cantidadVenta;
-              productoExistente.cantidadActual = cantidadDisponible - cantidadVenta;
-              await this.productoRepository.save(productoExistente);
-              console.log(
-                `Venta registrada correctamente. Precio de venta: $${precioVenta.toFixed(
-                  2,
-                )}.`,
-              );
-            } else {
-              console.log(
-                'No hay suficiente cantidad de ' + nombreProducto + ' en el inventario.',
-              );
-            }
-          } else if (productoExistente.medida === Medida.PESO) {
-            if (cantidadVenta <= cantidadDisponible) {
-              const precioVenta = costoXunidad * cantidadVenta;
-              productoExistente.cantidadActual = cantidadDisponible - cantidadVenta;
-              await this.productoRepository.save(productoExistente);
-              console.log(
-                `Venta registrada correctamente. Precio de venta: $${precioVenta.toFixed(
-                  2,
-                )}.`,
-              );
-            } else {
-              console.log(
-                'No hay suficiente cantidad de ' + nombreProducto + ' en el inventario.',
-              );
-            }
-          }
-        } else {
-          console.log('Producto no encontrado en el inventario.');
+
+  async getVentaDia(diaVenta?: Date) {
+    let fechaVenta: Date;
+    if (!diaVenta) {
+      fechaVenta = new Date();
+    } else {
+      fechaVenta = new Date(
+        diaVenta.getFullYear(),
+        diaVenta.getMonth(),
+        diaVenta.getDate(),
+      );
+    }
+
+    console.log(fechaVenta);
+    console.log(diaVenta);
+    const ventaDia = await this.ventasXdiaRepository.findOne({
+      where: {
+        diaVenta: Between(
+          fechaVenta,
+          new Date(
+            fechaVenta.getFullYear(),
+            fechaVenta.getMonth(),
+            fechaVenta.getDate(),
+            23,
+            59,
+            59,
+          ),
+        ),
+      },
+    });
+
+    let ventas: Ventas[];
+    let acumulado: number = 0;
+    let ganancia: number = 0;
+    let costo: number = 0;
+
+    if (ventaDia) {
+      //Si ya hay un dia se utilizará el método update para actualizar los valores
+      console.log('Entre al primer IF');
+      console.log(ventaDia);
+
+      ventas = await this.getVentaFecha(fechaVenta);
+      for (let i = 0; i < ventas.length; i++) {
+        acumulado += ventas[i].totalAPagar;
+        for (let j = 0; j < ventas[i].productos.length; j++) {
+          costo += ventas[i].productos[j].costoXunidad;
         }
-    }*/
+        ganancia = acumulado - costo;
+      }
+      ventaDia.diaVenta = fechaVenta;
+      ventaDia.totalVentasRealizadas = ventas.length;
+      ventaDia.TotalAcumulado = acumulado;
+      ventaDia.ganancia = ganancia;
+      const cierreCaja = new Date(
+        fechaVenta.getFullYear(),
+        fechaVenta.getMonth(),
+        fechaVenta.getDate(),
+        23,
+        59,
+        59,
+      );
+      ventaDia.fechaCierreCaja = cierreCaja;
+      console.log(ventaDia);
+
+      return await this.ventasXdiaRepository.update(
+        { id: ventaDia.id },
+        ventaDia,
+      );
+    } else {
+      console.log('Estoy en el segundo IF');
+
+      const nuevoVentaDia = new VentasXDia();
+      ventas = await this.getVentaFecha(diaVenta);
+      for (let i = 0; i < ventas.length; i++) {
+        acumulado += ventas[i].totalAPagar;
+        for (let j = 0; j < ventas[i].productos.length; j++) {
+          costo += ventas[i].productos[j].costoXunidad;
+        }
+        ganancia = acumulado - costo;
+      }
+      nuevoVentaDia.diaVenta = fechaVenta;
+      nuevoVentaDia.totalVentasRealizadas = ventas.length;
+      nuevoVentaDia.TotalAcumulado = acumulado;
+      nuevoVentaDia.ganancia = ganancia;
+      const cierreCaja = new Date(
+        fechaVenta.getFullYear(),
+        fechaVenta.getMonth(),
+        fechaVenta.getDate(),
+        23,
+        59,
+        59,
+      );
+      nuevoVentaDia.fechaCierreCaja = cierreCaja;
+      console.log(nuevoVentaDia);
+
+      return await this.ventasXdiaRepository.save(nuevoVentaDia);
+    }
+  }
 
   async registrarVenta(
     venta: {
@@ -82,8 +131,7 @@ export class VentasService {
     nuevaVenta.productos = [];
     nuevaVenta.totalAPagar = 0; // Asegúrate de inicializar el totalAPagar a 0.
     console.log(venta.productos.length);
-    
-    
+
     for (let i = 0; i < venta.productos.length; i++) {
       console.log(i);
       const productoEncontrado = await this.productoRepository.findOne({
@@ -145,12 +193,12 @@ export class VentasService {
       }
     }
     const ventaFactura =
-        Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+      Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
 
-      nuevaVenta.ventaFactura = ventaFactura;
-      nuevaVenta.efectivo = venta.efectivo;
-      nuevaVenta.cambio = venta.efectivo - nuevaVenta.totalAPagar;
-      return await this.ventasRepository.save(nuevaVenta);
+    nuevaVenta.ventaFactura = ventaFactura;
+    nuevaVenta.efectivo = venta.efectivo;
+    nuevaVenta.cambio = venta.efectivo - nuevaVenta.totalAPagar;
+    return await this.ventasRepository.save(nuevaVenta);
   }
 
   getVentas() {
@@ -172,5 +220,30 @@ export class VentasService {
     }
 
     return ventaEncontrada;
+  }
+
+  async getVentaFecha(fecha: Date): Promise<Ventas[]> {
+    const startOfDay = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate(),
+    );
+    const endOfDay = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+    const ventasEncontradas = await this.ventasRepository.find({
+      where: {
+        fechaVenta: Between(startOfDay, endOfDay)
+      },
+      relations: ['productos'],
+    });
+
+    return ventasEncontradas;
   }
 }

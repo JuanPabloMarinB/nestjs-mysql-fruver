@@ -17,6 +17,8 @@ import { EnumController } from 'src/controllers/enumsController';
 import { ventasModule } from './ventasModule';
 import { VentasService } from 'src/services/VentaService';
 import { VentasController } from 'src/controllers/ventasController';
+import { VentasXDia } from 'src/entities/VentasXDia.entity';
+import { VentasXDiaRepository } from 'src/repository/ventasXdiaRepository';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { VentasController } from 'src/controllers/ventasController';
       Producto,
       Usuario,
       Ventas,
+      VentasXDia,
       Categoria,
       productModule,
       ventasModule,
@@ -32,6 +35,6 @@ import { VentasController } from 'src/controllers/ventasController';
     ]),
   ],
   controllers: [productController, userController, EnumController, VentasController],
-  providers: [ProductService, JwtAuthGuard, UserService,  JwtService, VentasService],
+  providers: [ProductService, JwtAuthGuard, UserService,  JwtService, VentasService, VentasXDiaRepository],
 })
 export class AppModule {}
