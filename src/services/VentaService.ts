@@ -204,6 +204,12 @@ export class VentasService {
               productoEncontrado.id,
               productoEncontrado,
             )*/
+            const gananciaXproducto = //Agregado!!!
+              totalPrecioProductos -
+              productoEncontrado.costoXunidad * cantidadVenta[i]
+            console.log('Soy la gananciaXproducto: ' + gananciaXproducto)
+            nuevaVenta.gananciaXventa += gananciaXproducto //Agregado!!!
+            console.log('Soy la ganancia total: ' + nuevaVenta.gananciaXventa)
             nuevaVenta.productos.push(productoEncontrado)
             console.log('Producto registrado en venta')
           } else {
