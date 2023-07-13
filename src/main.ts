@@ -8,7 +8,7 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: 'https://inventario.circuitosinteligentes.com',
+      origin: ['https://inventario.circuitosinteligentes.com','http://localhost:5173']
     }),
   );
 
