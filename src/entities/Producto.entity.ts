@@ -5,11 +5,13 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import { Categoria } from './Categoria.entity';
 import { Ventas } from './Ventas.entity';
 import { Medida } from '../enums/Medida';
 import { CategoriaEnum } from 'src/enums/CategoriaEnum';
+import { VentasProductos } from './VentasProductos.entity';
 
 @Entity()
 export class Producto {
@@ -49,8 +51,8 @@ export class Producto {
   @Column({ type: 'enum', enum: CategoriaEnum })
   categoria: Categoria;
 
-  @ManyToMany(() => Ventas, (ventas) => ventas.productos)
-  ventas: Ventas;
+  @OneToMany(() => VentasProductos, (ventasProductos) => ventasProductos.producto)
+  ventasProductos: VentasProductos[];
 
   @Column({default: true})
   activo: boolean

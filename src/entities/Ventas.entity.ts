@@ -4,8 +4,11 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm'
 import { Producto } from './Producto.entity'
+import { VentasProductos } from './VentasProductos.entity'
 
 @Entity()
 export class Ventas {
@@ -18,13 +21,8 @@ export class Ventas {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fechaVenta: Date
 
-  @ManyToMany(() => Producto)
-  @JoinTable()
-  productos: Producto[]
-
-  /* tener en cuenta... */
-  @Column({ type: 'text' })
-  cantidadVenta: string
+  @OneToMany(() => VentasProductos, (ventasProductos) => ventasProductos.venta, {cascade:true})
+  ventasProductos: VentasProductos[];
 
   @Column()
   totalAPagar: number

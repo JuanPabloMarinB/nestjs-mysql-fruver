@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { VentasService } from './../services/VentaService';
 import { Ventas } from 'src/entities/Ventas.entity';
+import { Producto } from 'src/entities/Producto.entity';
 
 @Controller('venta')
 export class VentasController {
@@ -28,7 +29,6 @@ export class VentasController {
       const [year, month, day] = diaVenta.split('-').map(Number);
       fechaVenta = new Date(year, month - 1, day);
       console.log(fechaVenta);
-      
     }
     return this.ventasService.getVentaDia(fechaVenta);
   }
@@ -43,9 +43,25 @@ export class VentasController {
 
   @Post('registro-venta')
   registrarVenta(
-    @Body('venta') venta: Ventas,
+    @Body('productos') productos: Producto[],
+    @Body('efectivo') efectivo: number,
     @Body('cantidadVenta') cantidadVenta: number[],
   ) {
-    return this.ventasService.registrarVenta(venta, cantidadVenta);
+    const venta = this.ventasService.registrarVenta(
+      productos,
+      efectivo,
+      cantidadVenta,
+    );
+
+    // Convierte el objeto a JSON manualmente y excluye la propiedad que causa la referencia circular.
+    const json = JSON.stringify(venta, (key, value) => {
+      if (key === 'venta') {
+        return undefined;
+      }
+      return value;
+    });
+
+    // Devuelve el JSON como respuesta.
+    return json;
   }
 }
