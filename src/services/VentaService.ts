@@ -90,10 +90,15 @@ export class VentasService {
       ventaDia.fechaCierreCaja = cierreCaja;
       console.log(ventaDia);
 
-      return await this.ventasXdiaRepository.update(
+      await this.ventasXdiaRepository.update(
         { id: ventaDia.id },
         ventaDia,
       );
+
+      return {
+        resumen: ventaDia,
+        ventas: ventas
+      }
     } else {
       console.log('Estoy en el segundo IF');
 
@@ -129,7 +134,11 @@ export class VentasService {
       nuevoVentaDia.fechaCierreCaja = cierreCaja;
       console.log(nuevoVentaDia);
 
-      return await this.ventasXdiaRepository.save(nuevoVentaDia);
+      await this.ventasXdiaRepository.save(nuevoVentaDia);
+      return {
+        resumen: nuevoVentaDia,
+        ventas: ventas
+      }
     }
   }
 
@@ -238,7 +247,7 @@ export class VentasService {
 
   getVentas() {
     return this.ventasRepository.find({
-      relations: ['productos'],
+      relations: ['ventasProductos', 'ventasProductos.producto'],
     });
   }
 
@@ -276,7 +285,7 @@ export class VentasService {
       where: {
         fechaVenta: Between(startOfDay, endOfDay),
       },
-      relations: ['productos'],
+      relations: ['ventasProductos', 'ventasProductos.producto'],
     });
 
     return ventasEncontradas;
