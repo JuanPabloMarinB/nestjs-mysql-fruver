@@ -165,13 +165,7 @@ export class VentasService {
           if (cantidadVenta[i] <= productoEncontrado.cantidadActual) {
             const totalPrecioProductos =
               productoEncontrado.precioVenta * cantidadVenta[i];
-            console.log(totalPrecioProductos);
             nuevaVenta.totalAPagar += totalPrecioProductos;
-            console.log('Soy la línea 101');
-            console.log(nuevaVenta.totalAPagar);
-
-            //console.log('Soy la línea 106');
-            //console.log(productos);
 
             const gananciaXproducto = //Agregado!!!
               totalPrecioProductos -
@@ -202,23 +196,18 @@ export class VentasService {
               productoEncontrado.id,
               productoEncontrado,
             )*/
-<<<<<<< Updated upstream
             const gananciaXproducto = //Agregado!!!
               totalPrecioProductos -
               productoEncontrado.costoXunidad * cantidadVenta[i]
             console.log('Soy la gananciaXproducto: ' + gananciaXproducto)
             nuevaVenta.gananciaXventa += gananciaXproducto //Agregado!!!
             console.log('Soy la ganancia total: ' + nuevaVenta.gananciaXventa)
-            nuevaVenta.productos.push(productoEncontrado)
-            console.log('Producto registrado en venta')
-=======
             const ventasProductos = new VentasProductos();
             ventasProductos.venta = nuevaVenta;
             ventasProductos.producto = productoEncontrado;
             ventasProductos.cantidadVenta = cantidadVenta[i];
             nuevaVenta.ventasProductos.push(ventasProductos);
             console.log('Producto registrado en venta');
->>>>>>> Stashed changes
           } else {
             return new HttpException(
               'La cantidad de productos a vender supera el stock disponible',
