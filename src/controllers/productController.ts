@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { Producto } from '../entities/Producto.entity';
 import { ProductService } from '../services/ProductService';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('producto')
 export class productController {
