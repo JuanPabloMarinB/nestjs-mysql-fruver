@@ -10,6 +10,7 @@ import {
 import { VentasService } from './../services/VentaService';
 import { Ventas } from 'src/entities/Ventas.entity';
 import { Producto } from 'src/entities/Producto.entity';
+import { MetodoPago } from 'src/enums/MetodoPago';
 
 @Controller('venta')
 export class VentasController {
@@ -46,11 +47,13 @@ export class VentasController {
     @Body('productos') productos: Producto[],
     @Body('efectivo') efectivo: number,
     @Body('cantidadVenta') cantidadVenta: number[],
+    @Body('metodoPago') metodoPago: MetodoPago,
   ) {
     const venta = this.ventasService.registrarVenta(
       productos,
       efectivo,
       cantidadVenta,
+      metodoPago,
     );
 
     // Convierte el objeto a JSON manualmente y excluye la propiedad que causa la referencia circular.

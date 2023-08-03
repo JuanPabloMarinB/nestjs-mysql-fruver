@@ -2,13 +2,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
-  JoinTable,
-  JoinColumn,
   OneToMany,
 } from 'typeorm'
-import { Producto } from './Producto.entity'
 import { VentasProductos } from './VentasProductos.entity'
+import { MetodoPago } from 'src/enums/MetodoPago'
 
 @Entity()
 export class Ventas {
@@ -35,6 +32,10 @@ export class Ventas {
 
   @Column()
   gananciaXventa: number //Agregado!!!
+
+  @Column({ type: 'enum', enum: MetodoPago, default: MetodoPago.EFECTIVO})
+  metodoPago: MetodoPago;
+
   /*
   constructor() {
     this.productos = [];

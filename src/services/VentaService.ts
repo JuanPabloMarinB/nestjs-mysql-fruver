@@ -5,6 +5,7 @@ import { Ventas } from 'src/entities/Ventas.entity';
 import { VentasProductos } from 'src/entities/VentasProductos.entity';
 import { VentasXDia } from 'src/entities/VentasXDia.entity';
 import { Medida } from 'src/enums/Medida';
+import { MetodoPago } from 'src/enums/MetodoPago';
 import { Between, Repository } from 'typeorm';
 
 @Injectable()
@@ -146,15 +147,16 @@ export class VentasService {
     productos: {
       nombre: string;
       codigoBarra: number;
-      //costoXunidad: number; //Agregado!!!
     }[],
     efectivo: number,
     cantidadVenta: number[],
+    metodoPago: MetodoPago,
   ) {
     const nuevaVenta = new Ventas();
     nuevaVenta.ventasProductos = [];
-    nuevaVenta.totalAPagar = 0; // Asegúrate de inicializar el totalAPagar a 0.
-    nuevaVenta.gananciaXventa = 0; //Agregado!!!
+    nuevaVenta.totalAPagar = 0;
+    nuevaVenta.gananciaXventa = 0;
+    nuevaVenta.metodoPago = metodoPago; //Agregado
 
     for (let i = 0; i < productos.length; i++) {
       console.log(i);
