@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
